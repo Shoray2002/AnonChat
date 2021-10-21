@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="flatlaf-extras-1.6.1">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/AnonChat/lib/flatlaf-extras-1.6.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/AnonChat/lib/svgSalamander-1.1.2.4.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
