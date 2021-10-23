@@ -1,15 +1,10 @@
-package new_base;
+package base;
 
 import Sha512.Sha512;
-// import all 
-import 
-
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Random;
 
 public class Start extends JPanel {
@@ -62,10 +57,9 @@ public class Start extends JPanel {
         tf3.setSize(200, 50);
         tf3.setText("");
         tf3.setEditable(true);
-        JLabel svg = new JLabel();
 
         SVGImage svgImage1 = new SVGImage();
-        svgImage1.setSvgImage("new_base/1.svg",100,100);
+        svgImage1.setSvgImage("base/assets/1.svg",100,100);
         svgImage1.setHorizontalAlignment(SVGImage.CENTER);
         svgImage1.setVerticalAlignment(SVGImage.CENTER);
         panel_main.add(svgImage1);
@@ -131,21 +125,23 @@ public class Start extends JPanel {
             frame.repaint();
         });
         submit1.addActionListener((ActionEvent e) -> {
-            try {
-                key = Sha512.hashText(tf1.getText());
-                System.out.println(key);
-            } catch (Exception e1) {
-                e1.printStackTrace();
-            }
+            
             if (!tf3.getText().equals("")) {
                 name = tf3.getText();
             } else {
                 name = "Anon";
             }
-            frame.remove(panel_get_code);
-            frame.add(panel_main);
-            frame.repaint();
-            // frame.dispose();
+            try {
+                key = Sha512.hashText(tf1.getText());
+                System.out.println(key);
+                Server.main(new String[]{key, name});
+            } catch (Exception e1) {
+                e1.printStackTrace();
+            }
+            // frame.remove(panel_get_code);
+            // frame.add(panel_main);
+            // frame.repaint();
+            frame.dispose();
         });
         submit2.addActionListener((ActionEvent e) -> {
             try {
