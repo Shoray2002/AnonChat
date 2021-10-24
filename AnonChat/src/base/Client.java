@@ -1,4 +1,5 @@
 package base;
+
 import javax.swing.*;
 
 import com.talanlabs.avatargenerator.*;
@@ -7,10 +8,19 @@ import com.talanlabs.avatargenerator.layers.others.RandomColorPaintLayer;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.net.Socket;
 
 public class Client extends JPanel {
+    BufferedWriter writer;
+    BufferedReader reader;
+    private String key;
+    private String name;
+
+    Client(String key, String name) {
+        this.key = key;
+        this.name = name;
+    }
 
     public void display(String key, String name) throws IOException {
 
@@ -78,6 +88,14 @@ public class Client extends JPanel {
         mainPanel.add(BorderLayout.NORTH, topPanel);
         mainPanel.add(BorderLayout.SOUTH, southPanel);
         f1.add(mainPanel);
+        f1.setLocationRelativeTo(null);
+        f1.setVisible(true);
+        try {
+            Socket socketClient = new Socket("localhost", 2003);
+            writer = new BufferedWriter(new OutputStreamWriter(socketClient.getOutputStream()));
+            reader = new BufferedReader(new InputStreamReader(socketClient.getInputStream()));
+        } catch (Exception e) {
+        }
 
         // f1.setMinimumSize(new Dimension(230, 500));
         // JPanel p1 = new JPanel();
@@ -89,8 +107,6 @@ public class Client extends JPanel {
         // p2.setSize(f1.getWidth(), f1.getHeight() - 70);
         // f1.add(p1);
         // f1.add(p2);
-        f1.setLocationRelativeTo(null);
-        f1.setVisible(true);
 
         sendMessage.addActionListener((ActionEvent e) -> {
             if (messageBox.getText().length() < 1) {
@@ -99,7 +115,15 @@ public class Client extends JPanel {
                 chatBox.setText("Cleared all messages\n");
                 messageBox.setText("");
             } else {
-                chatBox.append("<" + name + ">:  " + messageBox.getText() + "\n");
+                String str = "<" + name + ">:  " + messageBox.getText() + "\n";
+                chatBox.append(str);
+                try {
+                    writer.write(str);
+                    // writer.write("\r\n");
+                    writer.flush();
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
                 messageBox.setText("");
             }
             messageBox.requestFocusInWindow();
@@ -142,9 +166,9 @@ public class Client extends JPanel {
         EventQueue.invokeLater(new Runnable() {
             @Override
             public void run() {
-                Client server = new Client();
+                Client client_new = new Client(args[0], args[1]);
                 try {
-                    server.display(args[0], args[1]);
+                    client_new.display(args[0], args[1]);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
