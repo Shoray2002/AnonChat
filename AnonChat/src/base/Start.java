@@ -2,6 +2,9 @@ package base;
 
 import Sha512.Sha512;
 import javax.swing.*;
+
+import SVG.SVGImage;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
@@ -134,7 +137,7 @@ public class Start extends JPanel {
             try {
                 key = Sha512.hashText(tf1.getText());
                 System.out.println(key);
-                Server.main(new String[]{key, name});
+                Client.main(new String[]{key, name});
             } catch (Exception e1) {
                 e1.printStackTrace();
             }

@@ -1,4 +1,4 @@
-package base;
+package SVG;
 
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import java.awt.Color;
@@ -8,7 +8,7 @@ import java.util.function.Function;
 import javax.swing.JLabel;
 import javax.swing.Timer;
 
-class SVGImage extends JLabel {
+public class SVGImage extends JLabel {
 
     private FlatSVGIcon svgIcon;
     private Timer timer;
