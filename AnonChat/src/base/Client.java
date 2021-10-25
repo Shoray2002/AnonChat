@@ -3,7 +3,7 @@ package base;
 import javax.swing.*;
 
 import com.talanlabs.avatargenerator.*;
-import com.talanlabs.avatargenerator.layers.masks.RoundRectMaskLayer;
+// import com.talanlabs.avatargenerator.layers.masks.RoundRectMaskLayer;
 import com.talanlabs.avatargenerator.layers.others.RandomColorPaintLayer;
 
 import java.awt.*;
@@ -11,11 +11,12 @@ import java.awt.event.*;
 import java.io.*;
 import java.net.Socket;
 
-public class Client extends JPanel {
+public class Client extends JPanel  {
     BufferedWriter writer;
-    BufferedReader reader;
+    static BufferedReader reader;
     private String key;
     private String name;
+    static JTextArea chatBox = new JTextArea();
 
     Client(String key, String name) {
         this.key = key;
@@ -41,13 +42,12 @@ public class Client extends JPanel {
         // generate a random color
         Color randomColor = new Color((int) (Math.random() * 0x1000000));
 
-        Avatar avatar = GitHubAvatar.newAvatarBuilder().layers(new RandomColorPaintLayer(), new RoundRectMaskLayer())
-                .margin(20).padding(20).color(randomColor).build();
-
+        Avatar avatar = GitHubAvatar.newAvatarBuilder().layers(new RandomColorPaintLayer()).color(randomColor)
+                .size(80, 80).build();
+        // , new RoundRectMaskLayer()
         File file = new File("AnonChat\\src\\base\\assets\\test.png");
         avatar.createAsPngToFile(randomLong, file);
-        avatar.getHeight();
-        System.out.println(avatar.getHeight());
+        f1.setIconImage(Toolkit.getDefaultToolkit().getImage(file.getAbsolutePath()));
 
         // SVGImage svgImage1 = new SVGImage();
         // svgImage1.setSvgImage("base/assets/test.png", 100, 100);
@@ -77,7 +77,6 @@ public class Client extends JPanel {
         messageBox.setPreferredSize(new Dimension(f1.getWidth() - 70, f1.getHeight() / 10 - 70));
         JButton sendMessage = new JButton("Send Message");
         sendMessage.setBackground(new Color(255, 204, 25));
-        JTextArea chatBox = new JTextArea();
         chatBox.setEditable(false);
         chatBox.setFont(new Font("Serif", Font.PLAIN, 18));
         chatBox.setLineWrap(true);
@@ -140,7 +139,15 @@ public class Client extends JPanel {
                         chatBox.setText("Cleared all messages\n");
                         messageBox.setText("");
                     } else {
-                        chatBox.append("<" + name + ">:  " + messageBox.getText() + "\n");
+                        String str = "<" + name + ">:  " + messageBox.getText() + "\n";
+                        chatBox.append(str);
+                        try {
+                            writer.write(str);
+                            // writer.write("\r\n");
+                            writer.flush();
+                        } catch (IOException e1) {
+                            e1.printStackTrace();
+                        }
                         messageBox.setText("");
                     }
                     messageBox.requestFocusInWindow();
@@ -162,6 +169,9 @@ public class Client extends JPanel {
 
     }
 
+    // listen for messages in new thread
+  
+
     public static void main(String[] args) {
         EventQueue.invokeLater(new Runnable() {
             @Override
@@ -172,6 +182,22 @@ public class Client extends JPanel {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+                Thread t = new Thread(() -> {
+                    try {
+                        while (true) {
+                            String str = reader.readLine();
+
+                            if (str.equals("")) {
+                            } else {
+                                chatBox.append(str + "\n");
+                            }
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                });
+                t.start();
+
             }
         });
         // delete file if the window is closed

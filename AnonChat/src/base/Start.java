@@ -145,6 +145,7 @@ public class Start extends JPanel {
             // frame.add(panel_main);
             // frame.repaint();
             frame.dispose();
+            // start the server
         });
         submit2.addActionListener((ActionEvent e) -> {
             try {
@@ -184,6 +185,7 @@ public class Start extends JPanel {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+                
             }
         });
     }
