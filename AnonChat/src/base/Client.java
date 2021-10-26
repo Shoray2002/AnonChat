@@ -11,20 +11,19 @@ import java.awt.event.*;
 import java.io.*;
 import java.net.Socket;
 
-public class Client extends JPanel  {
+public class Client extends JPanel {
     BufferedWriter writer;
     static BufferedReader reader;
-    private String key;
-    private String name;
+    static private String key;
+    static private String name;
     static JTextArea chatBox = new JTextArea();
 
     Client(String key, String name) {
-        this.key = key;
-        this.name = name;
+        Client.key = key;
+        Client.name = name;
     }
 
     public void display(String key, String name) throws IOException {
-
         JFrame f1 = new JFrame(name);
         f1.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         f1.setLayout(new BorderLayout(50, 50));
@@ -75,11 +74,16 @@ public class Client extends JPanel  {
         messageBox.setOpaque(false);
         messageBox.requestFocusInWindow();
         messageBox.setPreferredSize(new Dimension(f1.getWidth() - 70, f1.getHeight() / 10 - 70));
+        messageBox.setSelectedTextColor(Color.red);
+        // enable text wrapping
+        chatBox.setLineWrap(true);
         JButton sendMessage = new JButton("Send Message");
         sendMessage.setBackground(new Color(255, 204, 25));
         chatBox.setEditable(false);
         chatBox.setFont(new Font("Serif", Font.PLAIN, 18));
         chatBox.setLineWrap(true);
+        chatBox.setWrapStyleWord(true);
+        chatBox.setBackground(Color.GRAY);
         mainPanel.add(new JScrollPane(chatBox), BorderLayout.CENTER);
 
         southPanel.add(messageBox, BorderLayout.CENTER);
@@ -96,16 +100,7 @@ public class Client extends JPanel  {
         } catch (Exception e) {
         }
 
-        // f1.setMinimumSize(new Dimension(230, 500));
-        // JPanel p1 = new JPanel();
-        // JPanel p2 = new JPanel();
-        // p1.setBackground(new Color(7, 94, 84));
-        // p1.setBounds(0, 0, f1.getWidth(), 70);
-        // p2.setBounds(0, 70, f1.getWidth(), f1.getHeight() - 70);
-        // p1.setSize(f1.getWidth(), 70);
-        // p2.setSize(f1.getWidth(), f1.getHeight() - 70);
-        // f1.add(p1);
-        // f1.add(p2);
+        f1.setMinimumSize(new Dimension(230, 500));
 
         sendMessage.addActionListener((ActionEvent e) -> {
             if (messageBox.getText().length() < 1) {
@@ -115,15 +110,13 @@ public class Client extends JPanel  {
                 messageBox.setText("");
             } else {
                 String str = "<" + name + ">:  " + messageBox.getText() + "\n";
-                chatBox.append(str);
                 try {
                     writer.write(str);
-                    // writer.write("\r\n");
                     writer.flush();
+                    messageBox.setText("");
                 } catch (IOException e1) {
                     e1.printStackTrace();
                 }
-                messageBox.setText("");
             }
             messageBox.requestFocusInWindow();
         });
@@ -143,7 +136,6 @@ public class Client extends JPanel  {
                         chatBox.append(str);
                         try {
                             writer.write(str);
-                            // writer.write("\r\n");
                             writer.flush();
                         } catch (IOException e1) {
                             e1.printStackTrace();
@@ -169,9 +161,6 @@ public class Client extends JPanel  {
 
     }
 
-    // listen for messages in new thread
-  
-
     public static void main(String[] args) {
         EventQueue.invokeLater(new Runnable() {
             @Override
@@ -186,7 +175,7 @@ public class Client extends JPanel  {
                     try {
                         while (true) {
                             String str = reader.readLine();
-
+                            System.out.println(str);
                             if (str.equals("")) {
                             } else {
                                 chatBox.append(str + "\n");

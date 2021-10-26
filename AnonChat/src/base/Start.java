@@ -7,11 +7,13 @@ import SVG.SVGImage;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.io.IOException;
+import java.io.*;
 import java.util.Random;
+import java.net.Socket;
 
 public class Start extends JPanel {
-    String key, name;
+    static String key;
+
     public String saltStrgen() {
         this.setSize(new Dimension(250, 150));
         String SALTCHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890*/-$%&";
@@ -27,7 +29,7 @@ public class Start extends JPanel {
     public void display(String saltStr) throws IOException {
         JFrame frame = new JFrame("AnonChat");
         frame.setVisible(false);
-        //frame.setResizable(false);
+        // frame.setResizable(false);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLayout(new GridLayout(0, 1, 20, 25));
         frame.setSize(300, 450);
@@ -62,12 +64,10 @@ public class Start extends JPanel {
         tf3.setEditable(true);
 
         SVGImage svgImage1 = new SVGImage();
-        svgImage1.setSvgImage("base/assets/1.svg",100,100);
+        svgImage1.setSvgImage("base/assets/1.svg", 100, 100);
         svgImage1.setHorizontalAlignment(SVGImage.CENTER);
         svgImage1.setVerticalAlignment(SVGImage.CENTER);
         panel_main.add(svgImage1);
-
-
 
         // panel main
         panel_main.setLayout(new GridLayout(0, 1, 20, 25));
@@ -128,44 +128,76 @@ public class Start extends JPanel {
             frame.repaint();
         });
         submit1.addActionListener((ActionEvent e) -> {
-            
+            String name;
             if (!tf3.getText().equals("")) {
                 name = tf3.getText();
             } else {
                 name = "Anon";
             }
-            try {
-                key = Sha512.hashText(tf1.getText());
-                System.out.println(key);
-                Client.main(new String[]{key, name});
-            } catch (Exception e1) {
-                e1.printStackTrace();
-            }
-            // frame.remove(panel_get_code);
-            // frame.add(panel_main);
-            // frame.repaint();
+            Thread t = new Thread(() -> {
+                try {
+                    Server.main(new String[] { tf1.getText(), name });
+                } catch (Exception ie) {
+                    ie.printStackTrace();
+                }
+            });
+            t.start();
             frame.dispose();
-            // start the server
+            try {
+                Socket socketClient = new Socket("localhost", 2003);
+                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(socketClient.getOutputStream()));
+                BufferedReader reader = new BufferedReader(new InputStreamReader(socketClient.getInputStream()));
+
+                while (key == null || key.equals("")) {
+                    key = reader.readLine().trim();
+                }
+                if (Sha512.hashText(tf1.getText()).equals(key)) {
+                    writer.write("exit");
+                    writer.newLine();
+                    writer.flush();
+                    System.out.println(Sha512.hashText(tf1.getText()));
+                    socketClient.close();
+                } else {
+                    JOptionPane.showMessageDialog(null, "Invalid Code");
+                }
+                Client.main(new String[] { tf1.getText(), name });
+
+            } catch (Exception ie) {
+                ie.printStackTrace();
+
+            }
         });
         submit2.addActionListener((ActionEvent e) -> {
-            try {
-                System.out.println(Sha512.hashText(tf2.getText()));
-                if (key.equals(Sha512.hashText(tf2.getText()))) {
-                    System.out.println("Success");
-                } else {
-                    System.out.println("Failed");
-                }
-            } catch (Exception e1) {
-                e1.printStackTrace();
-            }
+            String name;
             if (!tf3.getText().equals("")) {
                 name = tf3.getText();
             } else {
                 name = "Anon";
             }
-            frame.remove(panel_set_code);
-            frame.add(panel_main);
-            frame.repaint();
+            frame.dispose();
+            try {
+                Socket socketClient = new Socket("localhost", 2003);
+                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(socketClient.getOutputStream()));
+                BufferedReader reader = new BufferedReader(new InputStreamReader(socketClient.getInputStream()));
+                while (true) {
+                    String key = reader.readLine().trim();
+                    if (Sha512.hashText(tf2.getText()).equals(key)) {
+                        writer.write("exit");
+                        writer.newLine();
+                        writer.flush();
+                        System.out.println(Sha512.hashText(tf2.getText()));
+                        Client.main(new String[] { tf2.getText(), name });
+                        // socketClient.close();
+                        break;
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Invalid Code");
+                    }
+                }
+
+            } catch (Exception ie) {
+                ie.printStackTrace();
+
+            }
         });
         back_to_main.addActionListener((ActionEvent e) -> {
             frame.remove(panel_get_code);
@@ -185,7 +217,6 @@ public class Start extends JPanel {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                
             }
         });
     }
