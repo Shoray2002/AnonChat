@@ -1,0 +1,63 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "java",
+      "name": "Launch ClientRMIGUI",
+      "request": "launch",
+      "mainClass": "client.ClientRMIGUI",
+      "projectName": "APLpro_b776eb2c"
+    },
+    {
+      "type": "java",
+      "name": "Launch ChatServer",
+      "request": "launch",
+      "mainClass": "server.ChatServer",
+      "projectName": "APLpro_b776eb2c"
+    },
+    {
+      "type": "java",
+      "name": "Launch Current File",
+      "request": "launch",
+      "mainClass": "${file}"
+    },
+    {
+      "type": "java",
+      "name": "Launch Client",
+      "request": "launch",
+      "mainClass": "base.Client",
+      "projectName": "APLpro_b776eb2c"
+    },
+    {
+      "type": "java",
+      "name": "Launch ChatClient",
+      "request": "launch",
+      "mainClass": "base.Clienttest.ChatClient",
+      "projectName": "APLpro_b776eb2c"
+    },
+    {
+      "type": "java",
+      "name": "Launch Server",
+      "request": "launch",
+      "mainClass": "base.Server",
+      "projectName": "APLpro_b776eb2c"
+    },
+    {
+      "type": "java",
+      "name": "Launch ServerSock",
+      "request": "launch",
+      "mainClass": "base.ServerTest.ServerSock",
+      "projectName": "APLpro_b776eb2c"
+    },
+    {
+      "type": "java",
+      "name": "Launch Start",
+      "request": "launch",
+      "mainClass": "base.Start",
+      "projectName": "APLpro_b776eb2c"
+    }
+  ]
+}
