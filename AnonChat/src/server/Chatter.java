@@ -3,8 +3,7 @@ package server;
 import client.ChatClientIF;
 
 /**
- * A class used by the server program to keep details of connected clients
- * ordered
+ * A class used by the server program to keep details of connected clients ordered
  */
 public class Chatter {
 

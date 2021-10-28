@@ -3,7 +3,7 @@ package client;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
-import java.awt.Dimension;
+// import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Insets;
@@ -29,11 +29,11 @@ import javax.swing.ListSelectionModel;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.border.Border;
-import javax.swing.plaf.ColorUIResource;
+// import javax.swing.plaf.ColorUIResource;
 
 import com.talanlabs.avatargenerator.*;
 import com.talanlabs.avatargenerator.layers.others.RandomColorPaintLayer;
-import java.awt.event.*;
+// import java.awt.event.*;
 
 public class ClientRMIGUI extends JFrame implements ActionListener {
 
@@ -158,8 +158,7 @@ public class ClientRMIGUI extends JFrame implements ActionListener {
 	}
 
 	/**
-	 * Method to build the panel displaying currently connected users with a call to
-	 * the button panel building method
+	 * Method to build the panel displaying currently connected users with a call to the button panel building method
 	 */
 	public JPanel getUsersPanel() {
 
@@ -187,8 +186,6 @@ public class ClientRMIGUI extends JFrame implements ActionListener {
 	/**
 	 * Populate current user panel with a selectable list of currently connected
 	 * users
-	 * 
-	 * @param currClients
 	 */
 	public void setClientPanel(String[] currClients) {
 		clientPanel = new JPanel(new BorderLayout());
@@ -218,8 +215,6 @@ public class ClientRMIGUI extends JFrame implements ActionListener {
 
 	/**
 	 * Make the buttons and add the listener
-	 * 
-	 * @return
 	 */
 	public JPanel makeButtonPanel() {
 		sendButton = new JButton("Send");
@@ -312,7 +307,7 @@ public class ClientRMIGUI extends JFrame implements ActionListener {
 			remoteExc.printStackTrace();
 		}
 
-	}// end actionPerformed
+	}
 
 	// --------------------------------------------------------------------
 

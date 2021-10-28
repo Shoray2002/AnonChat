@@ -11,9 +11,7 @@ import javax.swing.JOptionPane;
 import server.ChatServerIF;
 
 public class ChatClient  extends UnicastRemoteObject implements ChatClientIF {
-	/**
-	 * 
-	 */
+
 	private static final long serialVersionUID = 7468891722773409712L;
 	ClientRMIGUI chatGUI;
 	private String hostName = "localhost";
@@ -83,7 +81,6 @@ public class ChatClient  extends UnicastRemoteObject implements ChatClientIF {
 		}
 	}
 
-	//=====================================================================
 	/**
 	 * Receive a string from the chat server
 	 * this is the clients RMI method, which will be used by the server 
@@ -113,7 +110,7 @@ public class ChatClient  extends UnicastRemoteObject implements ChatClientIF {
 		chatGUI.clientPanel.revalidate();
 	}
 
-}//end class
+}
 
 
 

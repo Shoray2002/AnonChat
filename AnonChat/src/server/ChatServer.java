@@ -68,7 +68,7 @@ public class ChatServer extends UnicastRemoteObject implements ChatServerIF {
 	}
 
 	/**
-	 * Send a string ( the latest post, mostly ) to all connected clients
+	 * Send a string to all connected clients
 	 */
 	public void updateChat(String name, String nextPost) throws RemoteException {
 		String message = name + " : " + nextPost + "\n";
@@ -105,8 +105,6 @@ public class ChatServer extends UnicastRemoteObject implements ChatServerIF {
 	 * register the clients interface and store it in a reference for future
 	 * messages to be sent to, ie other members messages of the chat session. send a
 	 * test message for confirmation / test connection
-	 * 
-	 * @param details
 	 */
 	private void registerChatter(String[] details) {
 		try {
@@ -140,8 +138,6 @@ public class ChatServer extends UnicastRemoteObject implements ChatServerIF {
 
 	/**
 	 * generate a String array of current users
-	 * 
-	 * @return
 	 */
 	private String[] getUserList() {
 		// generate an array of current users
@@ -154,8 +150,6 @@ public class ChatServer extends UnicastRemoteObject implements ChatServerIF {
 
 	/**
 	 * Send a message to all users
-	 * 
-	 * @param newMessage
 	 */
 	public void sendToAll(String newMessage) {
 		for (Chatter c : chatters) {
