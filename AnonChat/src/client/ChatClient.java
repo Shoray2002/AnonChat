@@ -130,20 +130,7 @@ public class ChatClient  extends UnicastRemoteObject implements ChatClientIF {
 	}
 
 	/**
-	 * Test Method
-	 * For Testing
-	 */
-//	@Override
-//	public void decodeBase64(String encodedMessage) throws RemoteException {
-//		Base64.Decoder decoder = Base64.getDecoder();
-//		String decodedMessage = new String(decoder.decode(encodedMessage));
-//		chatGUI.textArea.append("Test base64 decode : "+decodedMessage);
-//	}
-//
-
-	/**
-	 * Test Method
-	 * For key generation
+	 * returns the public key
 	 */
 	@Override
 	public PublicKey getPublicKey() throws RemoteException,NoSuchAlgorithmException {
@@ -151,6 +138,11 @@ public class ChatClient  extends UnicastRemoteObject implements ChatClientIF {
 		return this.publicKey;
 	}
 
+	/**
+	 * A method to decrypt the Base64 encoded
+	 * RSA encrypted message and show it 
+	 * in the GUI
+	 */
 	@Override
 	public void decryptAndSend(String encodedMessage) throws Exception{
 	       Cipher decryptCipher = Cipher.getInstance("RSA");
@@ -159,16 +151,28 @@ public class ChatClient  extends UnicastRemoteObject implements ChatClientIF {
 	       chatGUI.textArea.append(decryptedMessage);
 	}
 
+	/**
+	 * returns the name
+	 */
 	@Override
 	public String getName() throws RemoteException {
 		return this.name;
 	}
 
+	/**
+	 * A method to update username to public key map
+	 * when a new user joins the chat room
+	 */
 	@Override
 	public void updatePublicKeyMap(Map <String,PublicKey> publicKeyMap) throws RemoteException {
 		this.chatterPublicKeyMap = publicKeyMap;
 	}
 
+	/**
+	 * A method to encrypt the message with 
+	 * public key of all clients in the chat room
+	 * and return username, encrypted message map
+	 */
 	@Override
 	public Map<String, String> encryptMessage(String message) throws Exception{
 		Map<String, String> messageMap = new HashMap<String, String>();
@@ -182,6 +186,12 @@ public class ChatClient  extends UnicastRemoteObject implements ChatClientIF {
 		return messageMap;
 	}
 
+	/**
+	 * A method to encrypt the message with
+	 * public key of only selected clients
+	 * (for Private Messaging)
+	 * and return username, encrypted message map
+	 */
 	@Override
 	public Map<String, String> encryptPrivateMessage(String username, String message) throws Exception{
 		Map<String, String> messageMap = new HashMap<String, String>();
@@ -204,6 +214,11 @@ public class ChatClient  extends UnicastRemoteObject implements ChatClientIF {
 		return messageMap;
 	}
 
+	/**
+	 * A method to encrypt leave message with
+	 * public keys of all users in chat room
+	 * and return the username to encrypted message map
+	 */
 	@Override
 	public Map<String, String> encryptLeaveMessage() throws Exception{
 		Map<String, String> messageMap = new HashMap<String, String>();
