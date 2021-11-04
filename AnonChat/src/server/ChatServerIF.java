@@ -3,6 +3,8 @@ package server;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.server.RemoteRef;
+import java.security.NoSuchAlgorithmException;
+import java.util.Map;
 
 /*
  * Server RMI interface
@@ -10,6 +12,8 @@ import java.rmi.server.RemoteRef;
 public interface ChatServerIF extends Remote {
 
 	public void updateChat(String userName, String chatMessage) throws RemoteException;
+
+	public void displayMessageFromMap(Map<String,String> messageMap) throws RemoteException;
 
 	public void passIDentity(RemoteRef ref) throws RemoteException;
 

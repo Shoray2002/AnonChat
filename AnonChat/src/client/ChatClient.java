@@ -10,6 +10,17 @@ import javax.swing.JOptionPane;
 
 import server.ChatServerIF;
 
+import java.util.Base64;
+import java.util.Map;
+import java.util.HashMap;
+import java.security.KeyPairGenerator;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.security.KeyPair;
+import java.security.NoSuchAlgorithmException;
+import javax.crypto.Cipher;
+import java.nio.charset.StandardCharsets;
+
 public class ChatClient  extends UnicastRemoteObject implements ChatClientIF {
 
 	private static final long serialVersionUID = 7468891722773409712L;
@@ -20,6 +31,9 @@ public class ChatClient  extends UnicastRemoteObject implements ChatClientIF {
 	private String name;
 	protected ChatServerIF serverIF;
 	protected boolean connectionProblem = false;
+	private PrivateKey privateKey;
+	public PublicKey publicKey;
+	public Map<String,PublicKey> chatterPublicKeyMap;
 
 	
 	/**
@@ -28,11 +42,16 @@ public class ChatClient  extends UnicastRemoteObject implements ChatClientIF {
 	 * a port no passed in argument to super
 	 * @throws RemoteException
 	 */
-	public ChatClient(ClientRMIGUI aChatGUI, String userName) throws RemoteException {
+	public ChatClient(ClientRMIGUI aChatGUI, String userName) throws RemoteException,NoSuchAlgorithmException {
 		super();
 		this.chatGUI = aChatGUI;
 		this.name = userName;
 		this.clientServiceName = "ClientListenService_" + userName;
+		KeyPairGenerator generator = KeyPairGenerator.getInstance("RSA");
+		generator.initialize(1024);
+		KeyPair pair = generator.generateKeyPair();
+		this.privateKey = pair.getPrivate();
+		this.publicKey = pair.getPublic();
 	}
 
 	
@@ -110,6 +129,93 @@ public class ChatClient  extends UnicastRemoteObject implements ChatClientIF {
 		chatGUI.clientPanel.revalidate();
 	}
 
+	/**
+	 * Test Method
+	 * For Testing
+	 */
+//	@Override
+//	public void decodeBase64(String encodedMessage) throws RemoteException {
+//		Base64.Decoder decoder = Base64.getDecoder();
+//		String decodedMessage = new String(decoder.decode(encodedMessage));
+//		chatGUI.textArea.append("Test base64 decode : "+decodedMessage);
+//	}
+//
+
+	/**
+	 * Test Method
+	 * For key generation
+	 */
+	@Override
+	public PublicKey getPublicKey() throws RemoteException,NoSuchAlgorithmException {
+
+		return this.publicKey;
+	}
+
+	@Override
+	public void decryptAndSend(String encodedMessage) throws Exception{
+	       Cipher decryptCipher = Cipher.getInstance("RSA");
+	       decryptCipher.init(Cipher.DECRYPT_MODE, privateKey);
+	       String decryptedMessage = new String(decryptCipher.doFinal(Base64.getDecoder().decode(encodedMessage)), StandardCharsets.UTF_8);
+	       chatGUI.textArea.append(decryptedMessage);
+	}
+
+	@Override
+	public String getName() throws RemoteException {
+		return this.name;
+	}
+
+	@Override
+	public void updatePublicKeyMap(Map <String,PublicKey> publicKeyMap) throws RemoteException {
+		this.chatterPublicKeyMap = publicKeyMap;
+	}
+
+	@Override
+	public Map<String, String> encryptMessage(String message) throws Exception{
+		Map<String, String> messageMap = new HashMap<String, String>();
+		message = "["+this.name+"] : "+ message + "\n";
+		for(Map.Entry<String, PublicKey> entry : chatterPublicKeyMap.entrySet()){
+			Cipher encryptCipher = Cipher.getInstance("RSA");
+			encryptCipher.init(Cipher.ENCRYPT_MODE, entry.getValue());
+			String encodedMessage = Base64.getEncoder().encodeToString(encryptCipher.doFinal(message.getBytes(StandardCharsets.UTF_8)));
+			messageMap.put(entry.getKey(), encodedMessage);
+		}
+		return messageMap;
+	}
+
+	@Override
+	public Map<String, String> encryptPrivateMessage(String username, String message) throws Exception{
+		Map<String, String> messageMap = new HashMap<String, String>();
+		String receiverMessage = "[PM from "+this.name+"] : " + message + "\n";
+		String senderMessage = "[PM to "+username+"] : " + message + "\n";
+		for(Map.Entry<String, PublicKey> entry : chatterPublicKeyMap.entrySet()){
+			if (username.equals(entry.getKey())){
+				Cipher encryptCipher = Cipher.getInstance("RSA");
+				encryptCipher.init(Cipher.ENCRYPT_MODE, entry.getValue());
+				String encodedMessage = Base64.getEncoder().encodeToString(encryptCipher.doFinal(receiverMessage.getBytes(StandardCharsets.UTF_8)));
+				messageMap.put(username, encodedMessage);
+			}
+			else if(this.name.equals(entry.getKey())){
+				Cipher encryptCipher = Cipher.getInstance("RSA");
+				encryptCipher.init(Cipher.ENCRYPT_MODE, entry.getValue());
+				String encodedMessage = Base64.getEncoder().encodeToString(encryptCipher.doFinal(senderMessage.getBytes(StandardCharsets.UTF_8)));
+				messageMap.put(this.name, encodedMessage);
+			}
+		}
+		return messageMap;
+	}
+
+	@Override
+	public Map<String, String> encryptLeaveMessage() throws Exception{
+		Map<String, String> messageMap = new HashMap<String, String>();
+		String message = this.name + " has left the chat.\n";
+		for(Map.Entry<String, PublicKey> entry : chatterPublicKeyMap.entrySet()){
+			Cipher encryptCipher = Cipher.getInstance("RSA");
+			encryptCipher.init(Cipher.ENCRYPT_MODE, entry.getValue());
+			String encodedMessage = Base64.getEncoder().encodeToString(encryptCipher.doFinal(message.getBytes(StandardCharsets.UTF_8)));
+			messageMap.put(entry.getKey(), encodedMessage);
+		}
+		return messageMap;
+	}
 }
 
 
