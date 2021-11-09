@@ -32,6 +32,7 @@ import javax.swing.border.Border;
 import com.talanlabs.avatargenerator.*;
 import com.talanlabs.avatargenerator.layers.others.RandomColorPaintLayer;
 
+
 import java.util.Map;
 import java.util.List;
 import java.security.NoSuchAlgorithmException;
@@ -71,12 +72,16 @@ public class ClientRMIGUI extends JFrame implements ActionListener {
 	public ClientRMIGUI() {
 
 		frame = new JFrame("AnonChat");
+		ImageIcon image = new ImageIcon("AnonChat\\src\\assets\\icon2.png");
+		frame.setIconImage(image.getImage());
+		frame.setBackground(new Color(44, 47, 51));
+		frame.setMinimumSize(new java.awt.Dimension(800, 500));
+		// frame.setUndecorated(true);
+		
 		/*
 		 * intercept close method, inform server we are leaving then let the system
 		 * exit.
 		 */
-		frame.setBackground(new Color(44, 47, 51));
-		frame.setMinimumSize(new java.awt.Dimension(800, 500));
 		frame.addWindowListener(new java.awt.event.WindowAdapter() {
 			@Override
 			public void windowClosing(java.awt.event.WindowEvent windowEvent) {
@@ -93,7 +98,6 @@ public class ClientRMIGUI extends JFrame implements ActionListener {
 				System.exit(0);
 			}
 		});
-		
 
 		Container c = getContentPane();
 		JPanel outerPanel = new JPanel(new BorderLayout());
@@ -158,7 +162,7 @@ public class ClientRMIGUI extends JFrame implements ActionListener {
 	public JPanel getUsersPanel() {
 
 		userPanel = new JPanel(new BorderLayout());
-		String userStr = "Online Users";
+		String userStr = "<html><FONT COLOR=#E9B018> Online Users </FONT></html>";
 		JLabel title = new JLabel(userStr);
 		title.setForeground(new Color(35, 39, 42));
 		title.setHorizontalAlignment(JLabel.CENTER);
@@ -188,7 +192,7 @@ public class ClientRMIGUI extends JFrame implements ActionListener {
 		for (String s : currClients) {
 			listModel.addElement(s);
 		}
-		if (currClients.length > 1) {
+		if (currClients.length > 2) {
 			privateMsgButton.setEnabled(true);
 		}
 
@@ -211,22 +215,22 @@ public class ClientRMIGUI extends JFrame implements ActionListener {
 	 * Make the buttons and add the listener
 	 */
 	public JPanel makeButtonPanel() {
-		sendButton = new JButton("Send");
+		sendButton = new JButton("<html><FONT COLOR=#404EED><STRONG>SEND</STRONG></FONT></html>");
 		sendButton.addActionListener(this);
 		sendButton.setEnabled(false);
 		sendButton.setFont(meiryoFont);
-		sendButton.setBackground(new Color(58, 237, 151));
+		sendButton.setBackground(new Color(87, 242, 135));
 
-		privateMsgButton = new JButton("Send PM");
+		privateMsgButton = new JButton("<html><FONT COLOR=#FFFFFF><STRONG>SEND</STRONG></FONT></html>");
 
 		if (list.getSelectedValue() == null) {
 			privateMsgButton.setEnabled(false);
 		}
 		privateMsgButton.addActionListener(this);
-		privateMsgButton.setBackground(new Color(58, 237, 151));
-		startButton = new JButton("Start");
+		privateMsgButton.setBackground(new Color(0, 0, 0));
+		startButton = new JButton("<html><FONT COLOR=#404EED><STRONG>START</STRONG></FONT></html>");
 		startButton.addActionListener(this);
-		startButton.setBackground(new Color(58, 237, 151));
+		startButton.setBackground(new Color(87, 242, 135));
 		JPanel buttonPanel = new JPanel(new GridLayout(5, 1));
 		buttonPanel.add(new JLabel(""));
 		buttonPanel.add(privateMsgButton);
@@ -247,6 +251,23 @@ public class ClientRMIGUI extends JFrame implements ActionListener {
 			// get connected to chat service
 			if (e.getSource() == startButton) {
 				name = textField.getText();
+				// Boolean isValid = true;
+				// String[] users = new String[50];
+				// for (int i = 0; i < list.getModel().getSize(); i++) {
+				// users[i] = list.getModel().getElementAt(i);
+				// System.out.println(users[i]);
+				// }
+				// // check if name is valid
+				// for (int i = 0; i < users.length; i++) {
+				// if (users[i] != null) {
+				// if (users[i].equals(name)) {
+				// isValid = false;
+				// JOptionPane.showMessageDialog(null, "Name already exists");
+				// break;
+				// }
+				// }
+				// }
+
 				if (name.length() != 0) {
 					frame.setTitle(name + "'s console ");
 					textField.setText("");
@@ -273,9 +294,14 @@ public class ClientRMIGUI extends JFrame implements ActionListener {
 
 			// get text and clear textField
 			if (e.getSource() == sendButton) {
-				message = textField.getText();
-				textField.setText("");
-				sendMessageMap(chatClient.encryptMessage(message));
+				String text = textField.getText();
+				if (text.length() != 0) {
+					textField.setText("");
+					sendMessageMap(chatClient.encryptMessage(text));
+				} else {
+					JOptionPane.showMessageDialog(frame, "Enter Message to Send");
+				}
+
 			}
 
 			// send a private message, to selected users
@@ -291,16 +317,18 @@ public class ClientRMIGUI extends JFrame implements ActionListener {
 						JOptionPane.showMessageDialog(frame, "You can't send a private message to yourself");
 					}
 					textField.setText("");
-					for (int i=0; i<usernameList.size(); i++){
-					String username = usernameList.get(i);
-					sendMessageMap(chatClient.encryptPrivateMessage(username, message));
+					for (int i = 0; i < usernameList.size(); i++) {
+						String username = usernameList.get(i);
+						sendMessageMap(chatClient.encryptPrivateMessage(username, message));
 					}
 
 				}
 
 			}
 
-		} catch (Exception e2) {
+		} catch (
+
+		Exception e2) {
 			e2.printStackTrace();
 		}
 

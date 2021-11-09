@@ -1,12 +1,6 @@
 {
   "java.project.referencedLibraries": {
-    "include": [
-      "lib/**/*.jar",
-      "AnonChat/lib/flatlaf-1.6.1.jar",
-      "AnonChat/lib/flatlaf-extras-1.6.1.jar",
-      "AnonChat/lib/svgSalamander-1.1.2.4.jar",
-      "AnonChat/lib/avatar-generator-1.0.0.jar"
-    ],
+    "include": ["lib/**/*.jar", "AnonChat/lib/avatar-generator-1.0.0.jar"],
     "exclude": ["AnonChat/lib/avatar-generator-1.0.0-javadoc.jar"]
   }
 }

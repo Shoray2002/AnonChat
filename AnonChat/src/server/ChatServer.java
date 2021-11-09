@@ -240,5 +240,4 @@ public class ChatServer extends UnicastRemoteObject implements ChatServerIF {
 			pc.getClient().messageFromServer(privateMessage);
 		}
 	}
-
 }
