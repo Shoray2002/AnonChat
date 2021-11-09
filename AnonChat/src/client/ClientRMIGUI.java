@@ -137,7 +137,7 @@ public class ClientRMIGUI extends JFrame implements ActionListener {
 		textPanel = new JPanel();
 		textPanel.setLayout(new BoxLayout(textPanel, BoxLayout.Y_AXIS));
 		textPanel.add(scrollPane);
-		textPanel.setFont(new Font("Meiryo", Font.PLAIN, 14));
+		textPanel.setFont(meiryoFont);
 		textPanel.setBorder(blankBorder);
 		textPanel.setBackground(new Color(114, 137, 218));
 		return textPanel;
@@ -158,7 +158,8 @@ public class ClientRMIGUI extends JFrame implements ActionListener {
 	}
 
 	/**
-	 * Method to build the panel displaying currently connected users with a call to the button panel building method
+	 * Method to build the panel displaying currently connected users with a call to
+	 * the button panel building method
 	 */
 	public JPanel getUsersPanel() {
 

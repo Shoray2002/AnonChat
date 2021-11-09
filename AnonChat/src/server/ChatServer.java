@@ -8,9 +8,7 @@ import java.rmi.server.RemoteRef;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Date;
 import java.util.Vector;
-
 import client.ChatClientIF;
-
 public class ChatServer extends UnicastRemoteObject implements ChatServerIF {
 	String line = "---------------------------------------------\n";
 	private Vector<Chatter> chatters;
@@ -109,13 +107,9 @@ public class ChatServer extends UnicastRemoteObject implements ChatServerIF {
 	private void registerChatter(String[] details) {
 		try {
 			ChatClientIF nextClient = (ChatClientIF) Naming.lookup("rmi://" + details[1] + "/" + details[2]);
-
 			chatters.addElement(new Chatter(details[0], nextClient));
-
 			nextClient.messageFromServer("[Server] : Hello " + details[0] + " you are now free to chat.\n");
-
 			sendToAll("[Server] : " + details[0] + " has joined the group.\n");
-
 			updateUserList();
 		} catch (RemoteException | MalformedURLException | NotBoundException e) {
 			e.printStackTrace();

@@ -12,7 +12,7 @@ import server.ChatServerIF;
 
 public class ChatClient  extends UnicastRemoteObject implements ChatClientIF {
 
-	private static final long serialVersionUID = 7468891722773409712L;
+	// private static final long serialVersionUID = 7468891722773409712L;
 	ClientRMIGUI chatGUI;
 	private String hostName = "localhost";
 	private String serviceName = "GroupChatService";
