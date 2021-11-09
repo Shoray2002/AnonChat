@@ -89,7 +89,7 @@ public class ClientRMIGUI extends JFrame implements ActionListener {
 
 				if (chatClient != null) {
 					try {
-						//sendMessageMap(chatClient.encryptMessage("Bye all, I am leaving"));
+						// sendMessageMap(chatClient.encryptMessage("Bye all, I am leaving"));
 						sendMessageMap(chatClient.encryptLeaveMessage());
 						chatClient.serverIF.leaveChat(name);
 					} catch (Exception e) {
@@ -292,21 +292,32 @@ public class ClientRMIGUI extends JFrame implements ActionListener {
 
 			// send a private message, to selected users
 			if (e.getSource() == privateMsgButton) {
-				int[] privateList = list.getSelectedIndices();
-				System.out.println("selected values " + list.getSelectedValue());
+				// int[] privateList = list.getSelectedIndices();
+				// System.out.println("selected values " + list.getSelectedValue());
 				if (list.getSelectedValue() + "'s console" == frame.getTitle()) {
 					JOptionPane.showMessageDialog(frame, "Select a user to send a private message");
 				} else {
-					for (int i = 0; i < privateList.length; i++) {
-						System.out.println("Selected index :" + privateList[i]);
-					}
+					// for (int i = 0; i < privateList.length; i++) {
+					//  System.out.println("Selected index :" + privateList[i]);
+					// }
 					message = textField.getText();
 					List<String> usernameList = list.getSelectedValuesList();
-					textField.setText("");
-					for (int i=0; i<usernameList.size(); i++){
-						String username = usernameList.get(i);
-						sendMessageMap(chatClient.encryptPrivateMessage(username, message));
+					// if the list has current user, remove it
+					if (usernameList.contains(name)) {
+						usernameList.remove(name);
+						JOptionPane.showMessageDialog(frame, "You can't send a private message to yourself");
 					}
+					textField.setText("");
+					for (int i = 0; i < usernameList.size(); i++) {
+						if (!usernameList.get(i).equals(name)) {
+							String username = usernameList.get(i);
+							sendMessageMap(chatClient.encryptPrivateMessage(username, message));
+						}
+					}
+					// for (int i=0; i<usernameList.size(); i++){
+					// String username = usernameList.get(i);
+					// sendMessageMap(chatClient.encryptPrivateMessage(username, message));
+					// }
 
 				}
 
@@ -324,14 +335,14 @@ public class ClientRMIGUI extends JFrame implements ActionListener {
 	 * Send a Base64 encoded RSA encrypted message
 	 */
 
-	private void sendMessageMap(Map<String,String> messageMap) throws Exception{
+	private void sendMessageMap(Map<String, String> messageMap) throws Exception {
 		chatClient.serverIF.displayMessageFromMap(messageMap);
 	}
 
 	/**
 	 * Make the connection to the chat server
 	 */
-	private void getConnected(String userName) throws RemoteException, NoSuchAlgorithmException{
+	private void getConnected(String userName) throws RemoteException, NoSuchAlgorithmException {
 		// remove whitespace and non word characters to avoid malformed url
 		String cleanedUserName = userName.replaceAll("\\s+", "_");
 		cleanedUserName = userName.replaceAll("\\W+", "_");

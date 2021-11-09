@@ -121,14 +121,11 @@ public class ChatServer extends UnicastRemoteObject implements ChatServerIF {
 			chatters.addElement(new Chatter(details[0], nextClient));
 			nextClient.messageFromServer("[Server] : Hello " + details[0] + " you are now free to chat.\n");
 			sendToAll("[Server] : " + details[0] + " has joined the group.\n");
-<<<<<<< HEAD
-=======
 
 			//encryptMessageRSA();
 			addPublicKeys();
 			updateClientPublicKeys();
 
->>>>>>> 23d935a18a26b42a9688eefd33d1899dd1bff867
 			updateUserList();
 		} catch (Exception e) {
 			e.printStackTrace();
