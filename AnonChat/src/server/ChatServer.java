@@ -9,9 +9,20 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.Date;
 import java.util.Vector;
 import client.ChatClientIF;
+
+import java.security.PublicKey;
+import java.security.NoSuchAlgorithmException;
+import javax.crypto.Cipher;
+import java.util.Base64;
+import java.util.Map;
+import java.util.HashMap;
+import java.nio.charset.StandardCharsets;
+
 public class ChatServer extends UnicastRemoteObject implements ChatServerIF {
 	String line = "---------------------------------------------\n";
 	private Vector<Chatter> chatters;
+	private Map <String, PublicKey> publicKeyMap = new HashMap<String, PublicKey>();
+
 	// private static final long serialVersionUID = 1L;
 
 	// Constructor
@@ -68,7 +79,7 @@ public class ChatServer extends UnicastRemoteObject implements ChatServerIF {
 	/**
 	 * Send a string to all connected clients
 	 */
-	public void updateChat(String name, String nextPost) throws RemoteException {
+	public void updateChat(String name, String nextPost) throws RemoteException{
 		String message = name + " : " + nextPost + "\n";
 		sendToAll(message);
 	}
@@ -91,7 +102,7 @@ public class ChatServer extends UnicastRemoteObject implements ChatServerIF {
 	 * method
 	 */
 	@Override
-	public void registerListener(String[] details) throws RemoteException {
+	public void registerListener(String[] details) throws RemoteException{
 		System.out.println(new Date(System.currentTimeMillis()));
 		System.out.println(details[0] + " has joined the chat session");
 		System.out.println(details[0] + "'s hostname : " + details[1]);
@@ -104,14 +115,22 @@ public class ChatServer extends UnicastRemoteObject implements ChatServerIF {
 	 * messages to be sent to, ie other members messages of the chat session. send a
 	 * test message for confirmation / test connection
 	 */
-	private void registerChatter(String[] details) {
+	private void registerChatter(String[] details){
 		try {
 			ChatClientIF nextClient = (ChatClientIF) Naming.lookup("rmi://" + details[1] + "/" + details[2]);
 			chatters.addElement(new Chatter(details[0], nextClient));
 			nextClient.messageFromServer("[Server] : Hello " + details[0] + " you are now free to chat.\n");
 			sendToAll("[Server] : " + details[0] + " has joined the group.\n");
+<<<<<<< HEAD
+=======
+
+			//encryptMessageRSA();
+			addPublicKeys();
+			updateClientPublicKeys();
+
+>>>>>>> 23d935a18a26b42a9688eefd33d1899dd1bff867
 			updateUserList();
-		} catch (RemoteException | MalformedURLException | NotBoundException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -154,6 +173,47 @@ public class ChatServer extends UnicastRemoteObject implements ChatServerIF {
 			}
 		}
 	}
+
+	public void displayMessageFromMap(Map<String,String> messageMap) throws RemoteException{
+		for (Chatter c : chatters) {
+			try {
+				String username = c.getClient().getName();
+				for(Map.Entry<String,String> entry : messageMap.entrySet()){
+					if(username.equals(entry.getKey())){
+						String encodedMessage = entry.getValue();
+						c.getClient().decryptAndSend(encodedMessage);
+					}
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	public void addPublicKeys() throws Exception{
+		for (Chatter c : chatters) {
+			try {
+				String chatterName = c.getClient().getName();
+				if (publicKeyMap.get(chatterName) == null){
+					PublicKey publicKey = c.getClient().getPublicKey();
+					publicKeyMap.put(chatterName, publicKey);
+				}
+			} catch (Exception e){
+				e.printStackTrace();
+			}
+		}
+	}
+
+	public void updateClientPublicKeys() throws Exception{
+		for (Chatter c : chatters) {
+			try {
+				c.getClient().updatePublicKeyMap(publicKeyMap);
+			} catch (Exception e){
+				e.printStackTrace();
+			}
+		}
+	}
+
 
 	/**
 	 * remove a client from the list, notify everyone
