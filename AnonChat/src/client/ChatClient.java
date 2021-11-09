@@ -109,7 +109,7 @@ public class ChatClient  extends UnicastRemoteObject implements ChatClientIF {
 	public void messageFromServer(String message) throws RemoteException {
 		System.out.println( message );
 		chatGUI.textArea.append( message );
-		//scroll to bottom
+		// //scroll to bottom
 		chatGUI.textArea.setCaretPosition(chatGUI.textArea.getDocument().getLength());
 	}
 

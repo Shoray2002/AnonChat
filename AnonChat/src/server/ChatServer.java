@@ -121,11 +121,8 @@ public class ChatServer extends UnicastRemoteObject implements ChatServerIF {
 			chatters.addElement(new Chatter(details[0], nextClient));
 			nextClient.messageFromServer("[Server] : Hello " + details[0] + " you are now free to chat.\n");
 			sendToAll("[Server] : " + details[0] + " has joined the group.\n");
-
-			//encryptMessageRSA();
 			addPublicKeys();
 			updateClientPublicKeys();
-
 			updateUserList();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -150,7 +147,6 @@ public class ChatServer extends UnicastRemoteObject implements ChatServerIF {
 	 * generate a String array of current users
 	 */
 	private String[] getUserList() {
-		// generate an array of current users
 		String[] allUsers = new String[chatters.size()];
 		for (int i = 0; i < allUsers.length; i++) {
 			allUsers[i] = chatters.elementAt(i).getName();

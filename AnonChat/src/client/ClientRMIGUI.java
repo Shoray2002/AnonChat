@@ -3,7 +3,6 @@ package client;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
-// import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Insets;
@@ -29,19 +28,15 @@ import javax.swing.ListSelectionModel;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.border.Border;
-// import javax.swing.plaf.ColorUIResource;
 
 import com.talanlabs.avatargenerator.*;
 import com.talanlabs.avatargenerator.layers.others.RandomColorPaintLayer;
-// import java.awt.event.*;
 
 import java.util.Map;
 import java.util.List;
 import java.security.NoSuchAlgorithmException;
 
 public class ClientRMIGUI extends JFrame implements ActionListener {
-
-	// private static final long serialVersionUID = 1L;
 	private JPanel textPanel, inputPanel;
 	private JTextField textField;
 	private String name, message;
@@ -82,7 +77,6 @@ public class ClientRMIGUI extends JFrame implements ActionListener {
 		 */
 		frame.setBackground(new Color(44, 47, 51));
 		frame.setMinimumSize(new java.awt.Dimension(800, 500));
-		// frame.setUndecorated(true);
 		frame.addWindowListener(new java.awt.event.WindowAdapter() {
 			@Override
 			public void windowClosing(java.awt.event.WindowEvent windowEvent) {
@@ -99,12 +93,7 @@ public class ClientRMIGUI extends JFrame implements ActionListener {
 				System.exit(0);
 			}
 		});
-		// -----------------------------------------
-		// remove window buttons and border frame
-		// to force user to exit on a button
-		// - one way to control the exit behaviour
-		// frame.setUndecorated(true);
-		// frame.getRootPane().setWindowDecorationStyle(JRootPane.FRAME);
+		
 
 		Container c = getContentPane();
 		JPanel outerPanel = new JPanel(new BorderLayout());
@@ -170,7 +159,6 @@ public class ClientRMIGUI extends JFrame implements ActionListener {
 
 		userPanel = new JPanel(new BorderLayout());
 		String userStr = "Online Users";
-		// set userStr in the center of the label
 		JLabel title = new JLabel(userStr);
 		title.setForeground(new Color(35, 39, 42));
 		title.setHorizontalAlignment(JLabel.CENTER);
@@ -276,8 +264,8 @@ public class ClientRMIGUI extends JFrame implements ActionListener {
 							.color(randomColor).size(80, 80).build();
 					avatar.createAsPngToFile(randomLong, file);
 					frame.setIconImage(new ImageIcon(file.getAbsolutePath()).getImage());
-					// delete the file
 					file.delete();
+					// creates an image and stores in the cache and then deletes it
 				} else {
 					JOptionPane.showMessageDialog(frame, "Enter your name to Start");
 				}
@@ -292,14 +280,9 @@ public class ClientRMIGUI extends JFrame implements ActionListener {
 
 			// send a private message, to selected users
 			if (e.getSource() == privateMsgButton) {
-				// int[] privateList = list.getSelectedIndices();
-				// System.out.println("selected values " + list.getSelectedValue());
 				if (list.getSelectedValue() + "'s console" == frame.getTitle()) {
 					JOptionPane.showMessageDialog(frame, "Select a user to send a private message");
 				} else {
-					// for (int i = 0; i < privateList.length; i++) {
-					//  System.out.println("Selected index :" + privateList[i]);
-					// }
 					message = textField.getText();
 					List<String> usernameList = list.getSelectedValuesList();
 					// if the list has current user, remove it
@@ -308,16 +291,10 @@ public class ClientRMIGUI extends JFrame implements ActionListener {
 						JOptionPane.showMessageDialog(frame, "You can't send a private message to yourself");
 					}
 					textField.setText("");
-					for (int i = 0; i < usernameList.size(); i++) {
-						if (!usernameList.get(i).equals(name)) {
-							String username = usernameList.get(i);
-							sendMessageMap(chatClient.encryptPrivateMessage(username, message));
-						}
+					for (int i=0; i<usernameList.size(); i++){
+					String username = usernameList.get(i);
+					sendMessageMap(chatClient.encryptPrivateMessage(username, message));
 					}
-					// for (int i=0; i<usernameList.size(); i++){
-					// String username = usernameList.get(i);
-					// sendMessageMap(chatClient.encryptPrivateMessage(username, message));
-					// }
 
 				}
 
