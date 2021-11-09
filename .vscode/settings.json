@@ -1,6 +1,5 @@
 {
   "java.project.referencedLibraries": {
     "include": ["lib/**/*.jar", "AnonChat/lib/avatar-generator-1.0.0.jar"],
-    "exclude": ["AnonChat/lib/avatar-generator-1.0.0-javadoc.jar"]
   }
 }

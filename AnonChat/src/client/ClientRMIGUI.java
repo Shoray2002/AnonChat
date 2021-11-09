@@ -39,7 +39,7 @@ import java.security.NoSuchAlgorithmException;
 
 public class ClientRMIGUI extends JFrame implements ActionListener {
 	private JPanel textPanel, inputPanel;
-	private JTextField textField;
+	 JTextField textField;
 	private String name, message;
 	private Font meiryoFont = new Font("Meiryo", Font.PLAIN, 14);
 	private Border blankBorder = BorderFactory.createEmptyBorder(10, 10, 20, 10);// top,r,b,l
@@ -115,8 +115,7 @@ public class ClientRMIGUI extends JFrame implements ActionListener {
 		frame.setLocation(150, 150);
 		textArea.requestFocus();
 
-		frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
-		frame.setVisible(true);
+	
 	}
 
 	/**

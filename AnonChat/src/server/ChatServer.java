@@ -1,5 +1,9 @@
 package server;
 
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Insets;
+import java.lang.ProcessHandle.Info;
 import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
@@ -17,18 +21,56 @@ import java.util.Base64;
 import java.util.Map;
 import java.util.HashMap;
 import java.nio.charset.StandardCharsets;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.UIManager;
+import javax.swing.UIManager.LookAndFeelInfo;
+import javax.swing.border.Border;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import java.awt.BorderLayout;
 
 public class ChatServer extends UnicastRemoteObject implements ChatServerIF {
+
+	// Frame frame=new Frame('server');
+
 	String line = "---------------------------------------------\n";
 	private Vector<Chatter> chatters;
-	private Map <String, PublicKey> publicKeyMap = new HashMap<String, PublicKey>();
-
-	// private static final long serialVersionUID = 1L;
+	private Map<String, PublicKey> publicKeyMap = new HashMap<String, PublicKey>();
+	private JFrame frame;
+	private JPanel mainPanel;
+	private JButton stop;
+	private JLabel status;
 
 	// Constructor
 	public ChatServer() throws RemoteException {
 		super();
 		chatters = new Vector<Chatter>(10, 1);
+		frame = new JFrame("AnonChat Server");
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setSize(250, 200);
+		frame.setLocationRelativeTo(null);
+		frame.setResizable(false);
+		frame.setLayout(new BorderLayout());
+		stop = new JButton("<html><FONT COLOR=#404EED><STRONG>Stop Server</STRONG></FONT></html>");
+		stop.setBackground(new Color(87, 242, 135));
+		stop.setFont(new Font("Meiryo", Font.BOLD, 30));
+		status = new JLabel("<html><FONT COLOR=#EEB81F> Server Is Running </FONT></html>");
+		status.setFont(new Font("Meiryo", Font.BOLD, 25));
+		status.setHorizontalAlignment(JLabel.CENTER);
+		status.setVerticalAlignment(JLabel.CENTER);
+		mainPanel = new JPanel();
+		mainPanel.setLayout(new BorderLayout());
+		mainPanel.add(status, BorderLayout.NORTH);
+		mainPanel.add(stop, BorderLayout.SOUTH);
+		frame.add(mainPanel, BorderLayout.CENTER);
+		frame.setVisible(true);
+		// handle stop button
+		stop.addActionListener(e -> {
+			System.exit(0);
+		});
+
 	}
 
 	// -----------------------------------------------------------
@@ -36,6 +78,16 @@ public class ChatServer extends UnicastRemoteObject implements ChatServerIF {
 	 * LOCAL METHODS
 	 */
 	public static void main(String[] args) {
+		try {
+			for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+				if ("Nimbus".equals(info.getName())) {
+					UIManager.setLookAndFeel(info.getClassName());
+					break;
+				}
+			}
+		} catch (Exception e) {
+		}
+
 		startRMIRegistry();
 		String hostName = "localhost";
 		String serviceName = "GroupChatService";
@@ -58,6 +110,7 @@ public class ChatServer extends UnicastRemoteObject implements ChatServerIF {
 		try {
 			java.rmi.registry.LocateRegistry.createRegistry(1099);
 			System.out.println("RMI Server ready");
+
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		}
@@ -79,7 +132,7 @@ public class ChatServer extends UnicastRemoteObject implements ChatServerIF {
 	/**
 	 * Send a string to all connected clients
 	 */
-	public void updateChat(String name, String nextPost) throws RemoteException{
+	public void updateChat(String name, String nextPost) throws RemoteException {
 		String message = name + " : " + nextPost + "\n";
 		sendToAll(message);
 	}
@@ -102,7 +155,7 @@ public class ChatServer extends UnicastRemoteObject implements ChatServerIF {
 	 * method
 	 */
 	@Override
-	public void registerListener(String[] details) throws RemoteException{
+	public void registerListener(String[] details) throws RemoteException {
 		System.out.println(new Date(System.currentTimeMillis()));
 		System.out.println(details[0] + " has joined the chat session");
 		System.out.println(details[0] + "'s hostname : " + details[1]);
@@ -115,7 +168,7 @@ public class ChatServer extends UnicastRemoteObject implements ChatServerIF {
 	 * messages to be sent to, ie other members messages of the chat session. send a
 	 * test message for confirmation / test connection
 	 */
-	private void registerChatter(String[] details){
+	private void registerChatter(String[] details) {
 		try {
 			ChatClientIF nextClient = (ChatClientIF) Naming.lookup("rmi://" + details[1] + "/" + details[2]);
 			chatters.addElement(new Chatter(details[0], nextClient));
@@ -167,12 +220,12 @@ public class ChatServer extends UnicastRemoteObject implements ChatServerIF {
 		}
 	}
 
-	public void displayMessageFromMap(Map<String,String> messageMap) throws RemoteException{
+	public void displayMessageFromMap(Map<String, String> messageMap) throws RemoteException {
 		for (Chatter c : chatters) {
 			try {
 				String username = c.getClient().getName();
-				for(Map.Entry<String,String> entry : messageMap.entrySet()){
-					if(username.equals(entry.getKey())){
+				for (Map.Entry<String, String> entry : messageMap.entrySet()) {
+					if (username.equals(entry.getKey())) {
 						String encodedMessage = entry.getValue();
 						c.getClient().decryptAndSend(encodedMessage);
 					}
@@ -183,30 +236,29 @@ public class ChatServer extends UnicastRemoteObject implements ChatServerIF {
 		}
 	}
 
-	public void addPublicKeys() throws Exception{
+	public void addPublicKeys() throws Exception {
 		for (Chatter c : chatters) {
 			try {
 				String chatterName = c.getClient().getName();
-				if (publicKeyMap.get(chatterName) == null){
+				if (publicKeyMap.get(chatterName) == null) {
 					PublicKey publicKey = c.getClient().getPublicKey();
 					publicKeyMap.put(chatterName, publicKey);
 				}
-			} catch (Exception e){
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
 	}
 
-	public void updateClientPublicKeys() throws Exception{
+	public void updateClientPublicKeys() throws Exception {
 		for (Chatter c : chatters) {
 			try {
 				c.getClient().updatePublicKeyMap(publicKeyMap);
-			} catch (Exception e){
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
 	}
-
 
 	/**
 	 * remove a client from the list, notify everyone
