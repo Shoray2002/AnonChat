@@ -37,10 +37,7 @@ public class ChatClient extends UnicastRemoteObject implements ChatClientIF {
 	public Map<String, PublicKey> chatterPublicKeyMap;
 
 	/**
-	 * class constructor, note may also use an overloaded constructor with a port no
-	 * passed in argument to super
-	 * 
-	 * @throws RemoteException
+	 * class constructor
 	 */
 	public ChatClient(ClientRMIGUI aChatGUI, String userName) throws RemoteException, NoSuchAlgorithmException {
 		super();
@@ -89,7 +86,7 @@ public class ChatClient extends UnicastRemoteObject implements ChatClientIF {
 	 */
 	public void registerWithServer(String[] details) {
 		try {
-			serverIF.passIDentity(this.ref);// now redundant ??
+			serverIF.passIDentity(this.ref);
 			serverIF.registerListener(details);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -104,7 +101,7 @@ public class ChatClient extends UnicastRemoteObject implements ChatClientIF {
 	public void messageFromServer(String message) throws RemoteException {
 		System.out.println(message);
 		chatGUI.textArea.append(message);
-		// //scroll to bottom
+		//scroll to bottom
 		chatGUI.textArea.setCaretPosition(chatGUI.textArea.getDocument().getLength());
 	}
 
