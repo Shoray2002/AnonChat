@@ -9,6 +9,8 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.rmi.RemoteException;
 
 import javax.swing.BorderFactory;
@@ -32,14 +34,13 @@ import javax.swing.border.Border;
 import com.talanlabs.avatargenerator.*;
 import com.talanlabs.avatargenerator.layers.others.RandomColorPaintLayer;
 
-
 import java.util.Map;
 import java.util.List;
 import java.security.NoSuchAlgorithmException;
 
 public class ClientRMIGUI extends JFrame implements ActionListener {
 	private JPanel textPanel, inputPanel;
-	 JTextField textField;
+	private JTextField textField;
 	private String name, message;
 	private Font meiryoFont = new Font("Meiryo", Font.PLAIN, 14);
 	private Border blankBorder = BorderFactory.createEmptyBorder(10, 10, 20, 10);// top,r,b,l
@@ -52,7 +53,7 @@ public class ClientRMIGUI extends JFrame implements ActionListener {
 	protected JButton privateMsgButton, startButton, sendButton;
 	protected JPanel clientPanel, userPanel;
 
-	public static void main(String args[]) {
+	public static void main(String args[]) throws MalformedURLException {
 		// set the look and feel to 'Nimbus'
 		try {
 			for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
@@ -68,16 +69,18 @@ public class ClientRMIGUI extends JFrame implements ActionListener {
 
 	/**
 	 * GUI Constructor
+	 * 
+	 * @throws MalformedURLException
 	 */
-	public ClientRMIGUI() {
-
+	public ClientRMIGUI() throws MalformedURLException {
 		frame = new JFrame("AnonChat");
-		ImageIcon image = new ImageIcon("AnonChat\\src\\assets\\icon2.png");
-		frame.setIconImage(image.getImage());
+		URL url = new URL("https://www.pngrepo.com/png/5161/180/chat.png");
+		ImageIcon icon = new ImageIcon(url);
+		frame.setIconImage(icon.getImage());
 		frame.setBackground(new Color(44, 47, 51));
 		frame.setMinimumSize(new java.awt.Dimension(800, 500));
 		// frame.setUndecorated(true);
-		
+
 		/*
 		 * intercept close method, inform server we are leaving then let the system
 		 * exit.
@@ -114,8 +117,9 @@ public class ClientRMIGUI extends JFrame implements ActionListener {
 		// frame.setAlwaysOnTop(true);
 		frame.setLocation(150, 150);
 		textArea.requestFocus();
+		frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
+		frame.setVisible(true);
 
-	
 	}
 
 	/**
@@ -277,7 +281,7 @@ public class ClientRMIGUI extends JFrame implements ActionListener {
 						startButton.setEnabled(false);
 						sendButton.setEnabled(true);
 					}
-					File file = new File("AnonChat\\src\\assets\\avatar.png");
+					File file = new File("avatar.png");
 					long randomLong = Math.round(Math.random() * 12345654321L);
 					Color randomColor = new Color((int) (Math.random() * 0x1000000));
 					Avatar avatar = GitHubAvatar.newAvatarBuilder().layers(new RandomColorPaintLayer())

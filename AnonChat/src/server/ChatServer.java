@@ -5,6 +5,7 @@ import java.awt.Font;
 import java.awt.Insets;
 import java.lang.ProcessHandle.Info;
 import java.net.MalformedURLException;
+import java.net.URL;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
@@ -44,10 +45,13 @@ public class ChatServer extends UnicastRemoteObject implements ChatServerIF {
 	private JLabel status;
 
 	// Constructor
-	public ChatServer() throws RemoteException {
+	public ChatServer() throws RemoteException, MalformedURLException {
 		super();
 		chatters = new Vector<Chatter>(10, 1);
 		frame = new JFrame("AnonChat Server");
+		URL url = new URL("https://i.ibb.co/m58BsMS/imageedit-9-3783505595.png");
+		ImageIcon icon = new ImageIcon(url);
+		frame.setIconImage(icon.getImage());
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setSize(250, 200);
 		frame.setLocationRelativeTo(null);
